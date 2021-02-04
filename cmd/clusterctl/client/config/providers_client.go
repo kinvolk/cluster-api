@@ -98,7 +98,7 @@ func (p *providersClient) defaults() []Provider {
 		// Infrastructure providers
 		&provider{
 			name:         AWSProviderName,
-			url:          "https://github.com/dongsupark/cluster-api-provider-aws/releases/latest/infrastructure-components.yaml",
+			url:          "https://github.com/dongsupark/cluster-api-provider-aws/releases/v0.3.99-test/infrastructure-components.yaml",
 			providerType: clusterctlv1.InfrastructureProviderType,
 		},
 		&provider{
@@ -156,7 +156,7 @@ func (p *providersClient) defaults() []Provider {
 		},
 		&provider{
 			name:         AWSEKSBootstrapProviderName,
-			url:          "https://github.com/dongsupark/cluster-api-provider-aws/releases/latest/eks-bootstrap-components.yaml",
+			url:          "https://github.com/dongsupark/cluster-api-provider-aws/releases/v0.3.99-test/eks-bootstrap-components.yaml",
 			providerType: clusterctlv1.BootstrapProviderType,
 		},
 		// ControlPlane providers
@@ -172,7 +172,7 @@ func (p *providersClient) defaults() []Provider {
 		},
 		&provider{
 			name:         AWSEKSControlPlaneProviderName,
-			url:          "https://github.com/dongsupark/cluster-api-provider-aws/releases/latest/eks-controlplane-components.yaml",
+			url:          "https://github.com/dongsupark/cluster-api-provider-aws/releases/v0.3.99-test/eks-controlplane-components.yaml",
 			providerType: clusterctlv1.ControlPlaneProviderType,
 		},
 	}
