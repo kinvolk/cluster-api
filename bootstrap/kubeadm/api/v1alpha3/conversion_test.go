@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha3
 
 import (
+	"math/rand"
 	"testing"
 
 	fuzz "github.com/google/gofuzz"
@@ -26,6 +27,7 @@ import (
 
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/cluster-api/bootstrap/kubeadm/api/v1alpha4"
+	kubeadmv1beta1 "sigs.k8s.io/cluster-api/bootstrap/kubeadm/types/v1beta1"
 	utilconversion "sigs.k8s.io/cluster-api/util/conversion"
 )
 
@@ -39,12 +41,13 @@ func TestFuzzyConversion(t *testing.T) {
 		Scheme:      scheme,
 		Hub:         &v1alpha4.KubeadmConfig{},
 		Spoke:       &KubeadmConfig{},
-		FuzzerFuncs: []fuzzer.FuzzerFuncs{KubeadmConfigStatusFuzzFuncs},
+		FuzzerFuncs: []fuzzer.FuzzerFuncs{KubeadmConfigStatusFuzzFuncs, kubeadmFuzzerFuncs},
 	}))
 	t.Run("for KubeadmConfigTemplate", utilconversion.FuzzTestFunc(utilconversion.FuzzTestFuncInput{
-		Scheme: scheme,
-		Hub:    &v1alpha4.KubeadmConfigTemplate{},
-		Spoke:  &KubeadmConfigTemplate{},
+		Scheme:      scheme,
+		Hub:         &v1alpha4.KubeadmConfigTemplate{},
+		Spoke:       &KubeadmConfigTemplate{},
+		FuzzerFuncs: []fuzzer.FuzzerFuncs{kubeadmFuzzerFuncs},
 	}))
 }
 
@@ -59,4 +62,33 @@ func KubeadmConfigStatusFuzzer(obj *KubeadmConfigStatus, c fuzz.Continue) {
 
 	// KubeadmConfigStatus.BootstrapData has been removed in v1alpha4, so setting it to nil in order to avoid v1alpha3 --> v1alpha4 --> v1alpha3 round trip errors.
 	obj.BootstrapData = nil
+}
+
+func kubeadmFuzzerFuncs(codecs runtimeserializer.CodecFactory) []interface{} {
+	return []interface{}{
+		// Fuzzer for BootstrapToken to ensure correctness of the token format.
+		func(j **kubeadmv1beta1.BootstrapTokenString, c fuzz.Continue) {
+			if c.RandBool() {
+				t := &kubeadmv1beta1.BootstrapTokenString{}
+				c.Fuzz(t)
+
+				t.ID = randTokenString(6)
+				t.Secret = randTokenString(16)
+
+				*j = t
+			} else {
+				*j = nil
+			}
+		},
+	}
+}
+
+const tokenCharsBytes = "abcdefghijklmnopqrstuvwxyz0123456789"
+
+func randTokenString(n int) string {
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = tokenCharsBytes[rand.Intn(len(tokenCharsBytes))]
+	}
+	return string(b)
 }
