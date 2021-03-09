@@ -113,6 +113,9 @@ func TestKubeadmControlPlaneValidateCreate(t *testing.T) {
 	invalidVersion2 := valid.DeepCopy()
 	invalidVersion2.Spec.Version = "1.16.6"
 
+	withInvalidIgnitionConfiguration := valid.DeepCopy()
+	withInvalidIgnitionConfiguration.Spec.KubeadmConfigSpec.Format = bootstrapv1.Ignition
+
 	tests := []struct {
 		name      string
 		expectErr bool
@@ -167,6 +170,11 @@ func TestKubeadmControlPlaneValidateCreate(t *testing.T) {
 			name:      "should return error when maxSurge is not 1",
 			expectErr: true,
 			kcp:       invalidMaxSurge,
+		},
+		{
+			name:      "validates Ignition configuration",
+			expectErr: true,
+			kcp:       withInvalidIgnitionConfiguration,
 		},
 	}
 
@@ -504,6 +512,9 @@ func TestKubeadmControlPlaneValidateUpdate(t *testing.T) {
 	disallowedUpgrade119Version := before.DeepCopy()
 	disallowedUpgrade119Version.Spec.Version = "v1.19.0"
 
+	withInvalidIgnitionConfiguration := before.DeepCopy()
+	withInvalidIgnitionConfiguration.Spec.KubeadmConfigSpec.Format = bootstrapv1.Ignition
+
 	tests := []struct {
 		name      string
 		expectErr bool
@@ -779,6 +790,12 @@ func TestKubeadmControlPlaneValidateUpdate(t *testing.T) {
 			expectErr: true,
 			before:    before,
 			kcp:       wrongReplicaCountForScaleIn,
+		},
+		{
+			name:      "validates Ignition configuration",
+			expectErr: true,
+			before:    withInvalidIgnitionConfiguration,
+			kcp:       withInvalidIgnitionConfiguration,
 		},
 	}
 
