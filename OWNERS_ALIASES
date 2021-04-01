@@ -66,3 +66,11 @@ aliases:
   cluster-api-clusterctl-reviewers:
   - fabriziopandini
   - wfernandes
+
+  # -----------------------------------------------------------
+  # OWNER_ALIASES for bootstrap/kubeadm/internal/ignition
+  # -----------------------------------------------------------
+
+  cluster-api-ignition-reviewers:
+  - dongsupark
+  - invidian
